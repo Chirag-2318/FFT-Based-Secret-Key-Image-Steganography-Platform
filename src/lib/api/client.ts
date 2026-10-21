@@ -8,10 +8,49 @@ import {
 } from './types';
 
 /**
- * Base URL for the Veil backend API.
- * Configurable via VITE_API_BASE_URL (defaults to /api/v1).
+ * Normalizes and resolves the API base URL from Vite environment variables.
+ * Automatically appends /api/v1 if the user omitted it, and strips trailing slashes.
  */
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+function resolveApiBaseUrl(): string {
+  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  if (!envUrl || typeof envUrl !== 'string' || envUrl.trim() === '' || envUrl.trim() === '/api/v1') {
+    return '/api/v1';
+  }
+  const trimmed = envUrl.trim().replace(/\/+$/, '');
+  return trimmed.endsWith('/api/v1') ? trimmed : `${trimmed}/api/v1`;
+}
+
+export const API_BASE_URL = resolveApiBaseUrl();
+
+/**
+ * Parses JSON response and provides clear diagnostics if a static host returns HTML.
+ */
+async function parseJsonResponse<T = Record<string, unknown>>(
+  response: Response,
+  endpointContext: string
+): Promise<T> {
+  const contentType = response.headers.get('content-type') || '';
+  if (contentType.includes('text/html')) {
+    console.error(
+      `[Veil API] Received HTML response from ${endpointContext}. Check that VITE_API_BASE_URL is set to your live backend Web Service URL in Render Static Site environment variables.`
+    );
+    throw new ApiError(
+      'server',
+      "Something went wrong on our side. Your files weren't saved. Try again.",
+      { status: response.status }
+    );
+  }
+  try {
+    return (await response.json()) as T;
+  } catch (parseErr) {
+    console.error(`[Veil API] Failed to parse JSON response from ${endpointContext}:`, parseErr);
+    throw new ApiError(
+      'server',
+      "Something went wrong on our side. Your files weren't saved. Try again.",
+      { status: response.status, cause: parseErr }
+    );
+  }
+}
 
 /**
  * HTTP Method for the capacity endpoint.
@@ -192,14 +231,13 @@ export async function parseEncodeResponse(response: Response): Promise<EncodeRes
   }
 
   // Strategy 1 (Default): JSON with image_base64
-  const data = await response.json();
-  const imageBase64 =
-    data.image_base64 ||
+  const data = await parseJsonResponse<Record<string, unknown>>(response, 'encode');
+  const imageBase64 = (data.image_base64 ||
     data.imageBase64 ||
     data.stego_image ||
     data.stegoImage ||
     data.image ||
-    data.file;
+    data.file) as string | undefined;
 
   if (!imageBase64 || !data.key) {
     throw new ApiError('server', 'Invalid encode JSON payload: missing image or key', {
@@ -208,7 +246,7 @@ export async function parseEncodeResponse(response: Response): Promise<EncodeRes
   }
 
   const stegoBlob = base64ToPngBlob(imageBase64);
-  const rawMetrics = data.metrics || data;
+  const rawMetrics = (data.metrics || data) as Record<string, unknown>;
   const metrics: EncodeMetrics = {
     psnr: Number(rawMetrics.psnr ?? 0),
     ssim: Number(rawMetrics.ssim ?? 0),
@@ -219,7 +257,7 @@ export async function parseEncodeResponse(response: Response): Promise<EncodeRes
 
   return {
     stegoBlob,
-    key: data.key,
+    key: String(data.key),
     metrics,
   };
 }
@@ -297,6 +335,12 @@ async function handleHttpError(
     }
   }
 
+  if (status === 404 || status === 405) {
+    console.error(
+      `[Veil API] Received HTTP ${status} from ${context}. Check that the backend Web Service is running and VITE_API_BASE_URL is set correctly.`
+    );
+  }
+
   // Fallback for capacity probe or unmapped codes
   throw new ApiError('server', `Request failed with status ${status}`, { status });
 }
@@ -372,9 +416,9 @@ export const realClient: ApiClient = {
         await handleHttpError(response, 'decode');
       }
 
-      const data = await response.json();
+      const data = await parseJsonResponse<Record<string, unknown>>(response, 'decode');
       return {
-        message: data.message ?? data.text ?? data.secret_message ?? data.secretMessage ?? '',
+        message: String(data.message ?? data.text ?? data.secret_message ?? data.secretMessage ?? ''),
       };
     } catch (err) {
       handleFetchCatch(err);
@@ -426,7 +470,7 @@ export const realClient: ApiClient = {
         await handleHttpError(response, 'capacity');
       }
 
-      const data = await response.json();
+      const data = await parseJsonResponse<Record<string, unknown>>(response, 'capacity');
       return {
         capacityBytes: Number(
           data.capacity_bytes ??

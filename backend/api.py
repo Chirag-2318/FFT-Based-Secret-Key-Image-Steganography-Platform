@@ -5,7 +5,10 @@ Compliant with PRD Section 6.3, Section 14.3, Section 14.4, and frontend API con
 
 import base64
 import io
+import logging
 import time
+
+logger = logging.getLogger("veil.api")
 from collections import defaultdict
 from typing import Dict, List, Optional, Tuple
 
@@ -194,6 +197,7 @@ async def encode_endpoint(
             },
         )
     except Exception as exc:
+        logger.error("Encoding error: %s", exc, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while encoding image.",

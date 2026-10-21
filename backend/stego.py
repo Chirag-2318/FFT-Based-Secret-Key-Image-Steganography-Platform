@@ -223,7 +223,7 @@ def encode_image(
     else:
         rgb_img = pil_img.convert("RGB")
 
-    cover_rgb = np.array(rgb_img, dtype=np.float64)
+    cover_rgb = np.array(rgb_img, dtype=np.float32)
 
     # Compute capacity
     max_capacity = calculate_capacity(width, height)
@@ -263,9 +263,11 @@ def encode_image(
     # Keyed embedding locations
     locations = _get_keyed_bit_locations(k_pos, total_blocks, len(bits_to_embed))
 
-    # Convert to YCbCr
-    y_channel, cb_channel, cr_channel = _rgb_to_ycbcr(cover_rgb)
-    stego_y = np.copy(y_channel)
+    # Convert to YCbCr using float32 and immediately release cover_rgb
+    cover_uint8 = np.array(rgb_img, dtype=np.uint8)
+    cover_rgb = cover_uint8.astype(np.float32)
+    stego_y, cb_channel, cr_channel = _rgb_to_ycbcr(cover_rgb)
+    del cover_rgb
 
     # Embed bit by bit with iterative rounding compensation (PRD 9.2 step 9, Section 19)
     for bit_idx, (block_idx, pair) in enumerate(locations):
@@ -287,7 +289,7 @@ def encode_image(
             emb_block_y = _embed_bit_in_block(curr_block_y, bit, pair, delta=QIM_DELTA)
             rgb_emb = _ycbcr_to_rgb(emb_block_y, block_cb, block_cr)
             rgb_u8 = np.clip(np.round(rgb_emb), 0, 255).astype(np.uint8)
-            y_rec, _, _ = _rgb_to_ycbcr(rgb_u8.astype(np.float64))
+            y_rec, _, _ = _rgb_to_ycbcr(rgb_u8.astype(np.float32))
             ext = _extract_bit_from_block(y_rec, pair, delta=QIM_DELTA)
             if ext == bit:
                 curr_block_y = emb_block_y
@@ -296,9 +298,11 @@ def encode_image(
 
         stego_y[r_start:r_end, c_start:c_end] = curr_block_y
 
-    # Convert back to RGB and round to uint8
+    # Convert back to RGB and round to uint8, freeing float channel buffers
     stego_rgb_float = _ycbcr_to_rgb(stego_y, cb_channel, cr_channel)
+    del stego_y, cb_channel, cr_channel
     stego_rgb_uint8 = np.clip(np.round(stego_rgb_float), 0, 255).astype(np.uint8)
+    del stego_rgb_float
 
     # Reattach alpha channel if original was RGBA (PRD E-9)
     if alpha_channel is not None:
@@ -321,7 +325,6 @@ def encode_image(
         raise RuntimeError(f"Self-check failed to decode stego image: {exc}") from exc
 
     # Metrics calculation
-    cover_uint8 = np.clip(np.round(cover_rgb), 0, 255).astype(np.uint8)
     psnr = calculate_psnr(cover_uint8, stego_rgb_uint8)
     ssim = calculate_ssim(cover_uint8, stego_rgb_uint8)
     bpp = calculate_bpp(len(message_bytes), width, height)
@@ -359,7 +362,7 @@ def decode_image(
         pil_img = Image.open(io.BytesIO(stego_image_bytes))
         width, height = pil_img.size
         rgb_img = pil_img.convert("RGB")
-        stego_rgb = np.array(rgb_img, dtype=np.float64)
+        stego_rgb = np.array(rgb_img, dtype=np.float32)
     except Exception as exc:
         raise StegoDecodeError("Unable to read image bytes.") from exc
 
@@ -372,6 +375,7 @@ def decode_image(
         raise StegoDecodeError("Image too small to contain secret message.")
 
     y_channel, _, _ = _rgb_to_ycbcr(stego_rgb)
+    del stego_rgb
 
     # Step 3: Extract the 32-bit length prefix
     len_locations = _get_keyed_bit_locations(k_pos, total_blocks, 32)

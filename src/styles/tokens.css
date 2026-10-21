@@ -1,0 +1,101 @@
+/* Estimated from the reference screenshots. Re-sample once with a colour picker and update here only. */
+@theme {
+  --color-cream: #ffffea;
+  --color-paper: #ffffff;
+  --color-sand: #e4e3d0;
+  --color-sand-soft: #f4f3e2;
+  --color-forest: #034d45;
+  --color-ink: #1a1a1a;
+  --color-ink-soft: #6b6a5e;
+  --color-lavender: #e9d5ff;
+  --color-lavender-deep: #d4b8f7;
+  --color-ember: #f26b45;
+  --color-line: #d9d8c4;
+  --color-error: #b3261e;
+
+  --radius-pill: 999px;
+  --radius-btn: 14px;
+  --radius-card: 24px;
+  --radius-panel: 40px;
+  --radius-section: 48px;
+
+  --font-serif: 'EB Garamond', Cormorant Garamond, Georgia, serif;
+  --font-sans: 'Figtree', Inter, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', IBM Plex Mono, monospace;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --duration-hover: 120ms;
+  --duration-press: 80ms;
+  --duration-toggle: 200ms;
+  --duration-crossfade: 180ms;
+  --duration-card-height: 300ms;
+  --duration-modal: 180ms;
+  --duration-toast: 150ms;
+  --duration-route: 200ms;
+  --duration-panel: 300ms;
+
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-24: 96px;
+  --spacing-32: 128px;
+  --spacing-40: 160px;
+}
+
+:root {
+  /* Raw custom properties for direct CSS variable usage */
+  --cream: #ffffea;
+  --paper: #ffffff;
+  --sand: #e4e3d0;
+  --sand-soft: #f4f3e2;
+  --forest: #034d45;
+  --ink: #1a1a1a;
+  --ink-soft: #6b6a5e;
+  --lavender: #e9d5ff;
+  --lavender-deep: #d4b8f7;
+  --ember: #f26b45;
+  --line: #d9d8c4;
+  --error: #b3261e;
+
+  --r-pill: 999px;
+  --r-btn: 14px;
+  --r-card: 24px;
+  --r-panel: 40px;
+  --r-section: 48px;
+
+  --font-serif: 'EB Garamond', Cormorant Garamond, Georgia, serif;
+  --font-sans: 'Figtree', Inter, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', IBM Plex Mono, monospace;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-state: ease-in-out;
+
+  --duration-hover: 120ms;
+  --duration-press: 80ms;
+  --duration-toggle: 200ms;
+  --duration-crossfade: 180ms;
+  --duration-card-height: 300ms;
+  --duration-modal: 180ms;
+  --duration-toast: 150ms;
+  --duration-route: 200ms;
+  --duration-panel: 300ms;
+
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 48px;
+  --space-64: 64px;
+  --space-96: 96px;
+  --space-128: 128px;
+  --space-160: 160px;
+}

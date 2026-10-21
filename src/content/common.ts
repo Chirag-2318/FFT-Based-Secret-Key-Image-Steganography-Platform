@@ -1,0 +1,38 @@
+export const commonContent = {
+  appName: 'Veil',
+  tagline: 'Hide messages in images',
+  modeHide: 'Hide',
+  modeReveal: 'Reveal',
+  keyLabel: 'Key',
+  actions: {
+    hideMessage: 'Hide message',
+    revealMessage: 'Reveal message',
+    openTool: 'Open the tool',
+    copyKey: 'Copy key',
+    keyCopied: 'Key copied',
+    downloadImage: 'Download image',
+    downloaded: 'Downloaded',
+    showDifference: 'Show the difference',
+    tryAgain: 'Try again',
+    gotIt: 'Got it',
+    close: 'Close',
+  },
+  sharingGuidance: {
+    title: 'Share it the safe way',
+    subtitle: 'Keep your secret message intact',
+    tip1: 'Send the image as a file or document, not as a photo.',
+    tip2: 'Send the key in a different message or channel.',
+    tip3: "Don't resize, screenshot or filter the image.",
+  },
+  errors: {
+    genericFailureTitle: 'Nothing to reveal.',
+    genericFailureBody:
+      'The key may be wrong, or the image may have been resized, compressed or edited since the message was hidden. Check both and try again.',
+    malformedKey: "That key doesn't look right. Check for a typo.",
+    fileTooBig: 'That file is too large. The limit is 10 MB.',
+    imageTooSmall: 'This photo is too small. Use one at least 128 x 128.',
+    offline: "You're offline.",
+    rateLimited: "That's a lot of tries. Wait a minute and try again.",
+    serverError: "Something went wrong on our side. Your files weren't saved. Try again.",
+  },
+} as const;

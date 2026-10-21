@@ -1,0 +1,144 @@
+/* Veil Global Styles */
+
+:root,
+html {
+  color-scheme: light;
+  --reduced-motion: 0;
+}
+
+body {
+  background-color: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Global focus-visible rule: 2px solid forest outline, offset 3px, on every interactive element. Never remove outlines. */
+:focus-visible {
+  outline: 2px solid var(--forest) !important;
+  outline-offset: 3px !important;
+}
+
+/* Selection color: lavender background, ink text */
+::selection {
+  background-color: var(--lavender);
+  color: var(--ink);
+}
+
+/* Type scale classes */
+.t-hero {
+  font-family: var(--font-serif);
+  font-size: clamp(56px, 8vw, 112px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+}
+
+.t-h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(40px, 6vw, 72px);
+  line-height: 1;
+  font-weight: 400;
+}
+
+.t-h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(30px, 4.5vw, 48px);
+  line-height: 1.05;
+  font-weight: 400;
+}
+
+.t-h3 {
+  font-family: var(--font-serif);
+  font-size: clamp(22px, 3.2vw, 32px);
+  line-height: 1.15;
+  font-weight: 400;
+}
+
+.t-lead {
+  font-family: var(--font-sans);
+  font-size: 22px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.t-body {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 1.6;
+  max-width: 62ch;
+  font-weight: 400;
+}
+
+.t-ui {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.t-caption {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 400;
+}
+
+/* Screen reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Prefers reduced motion handling */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --reduced-motion: 1;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .motion-safe-only {
+    display: none !important;
+  }
+}
+
+/* PixelGrid wave animation */
+@keyframes pixel-pulse {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-pixel-pulse {
+  animation: pixel-pulse 1.8s infinite ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pixel-pulse {
+    animation: none !important;
+  }
+}

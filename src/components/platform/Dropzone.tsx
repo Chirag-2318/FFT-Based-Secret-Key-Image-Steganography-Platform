@@ -70,7 +70,7 @@ export const Dropzone: React.FC<DropzoneProps> = ({
       const items = e.clipboardData.items;
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
-        if (item.type.startsWith('image/')) {
+        if (item && item.type.startsWith('image/')) {
           const pastedFile = item.getAsFile();
           if (pastedFile) {
             e.preventDefault();
@@ -111,7 +111,9 @@ export const Dropzone: React.FC<DropzoneProps> = ({
         setMultiFileNotice(null);
       }
       const droppedFile = e.dataTransfer.files[0];
-      handleProcessFile(droppedFile);
+      if (droppedFile) {
+        handleProcessFile(droppedFile);
+      }
     }
   };
 
@@ -119,7 +121,9 @@ export const Dropzone: React.FC<DropzoneProps> = ({
     setMultiFileNotice(null);
     if (e.target.files && e.target.files.length > 0) {
       const selectedFile = e.target.files[0];
-      handleProcessFile(selectedFile);
+      if (selectedFile) {
+        handleProcessFile(selectedFile);
+      }
     }
     // Reset file input so picking the same file again triggers change
     if (fileInputRef.current) {

@@ -41,3 +41,10 @@ ehthumbs.db
 # System / Temporary files
 *.tsbuildinfo
 .eslintcache
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/

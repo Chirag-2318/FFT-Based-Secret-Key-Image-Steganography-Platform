@@ -58,7 +58,10 @@ function generateMockKey(): string {
   crypto.getRandomValues(bytes);
   let raw = '';
   for (let i = 0; i < KEY_TOTAL_CHARS; i++) {
-    raw += KEY_ALPHABET[bytes[i] % KEY_ALPHABET.length];
+    const b = bytes[i];
+    if (b !== undefined) {
+      raw += KEY_ALPHABET[b % KEY_ALPHABET.length];
+    }
   }
   return formatKey(raw);
 }
@@ -157,7 +160,7 @@ export const mockClient: ApiClient = {
     };
   },
 
-  async decode(file: File, key: string, signal?: AbortSignal): Promise<DecodeResult> {
+  async decode(_file: File, key: string, signal?: AbortSignal): Promise<DecodeResult> {
     // Realistic delay: 0.8 to 1.6 seconds
     const decodeDelay = Math.floor(Math.random() * 800) + 800;
     await delayWithSignal(decodeDelay, signal);

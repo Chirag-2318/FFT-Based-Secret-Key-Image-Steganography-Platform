@@ -80,7 +80,7 @@ export const DissolveOverlay: React.FC<DissolveOverlayProps> = ({
 
     for (let i = 0; i < sliceLength; i++) {
       const ch = firstLine[i];
-      if (ch === ' ') continue;
+      if (!ch || ch === ' ') continue;
 
       const lineIndex = Math.floor(i / maxCharsPerLine);
       const colIndex = i % maxCharsPerLine;

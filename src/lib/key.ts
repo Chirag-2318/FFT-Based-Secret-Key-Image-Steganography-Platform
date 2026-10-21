@@ -22,7 +22,7 @@ export function normalizeKey(raw: string): string {
   let normalized = '';
   for (let i = 0; i < upper.length; i++) {
     const char = upper[i];
-    if (KEY_ALPHABET.includes(char)) {
+    if (char && KEY_ALPHABET.includes(char)) {
       normalized += char;
       if (normalized.length === KEY_TOTAL_CHARS) {
         break;
@@ -66,7 +66,8 @@ export function verifyKeyChecksum(raw: string): boolean {
   }
   // All characters are verified against KEY_ALPHABET
   for (let i = 0; i < normalized.length; i++) {
-    if (!KEY_ALPHABET.includes(normalized[i])) {
+    const char = normalized[i];
+    if (char && !KEY_ALPHABET.includes(char)) {
       return false;
     }
   }
@@ -99,7 +100,8 @@ export function calculateCaretPosition(
   const textBeforeCursor = inputVal.slice(0, cursorInInput).toUpperCase();
   let validCharsBefore = 0;
   for (let i = 0; i < textBeforeCursor.length; i++) {
-    if (KEY_ALPHABET.includes(textBeforeCursor[i])) {
+    const char = textBeforeCursor[i];
+    if (char && KEY_ALPHABET.includes(char)) {
       validCharsBefore++;
       if (validCharsBefore === KEY_TOTAL_CHARS) {
         break;

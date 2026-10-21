@@ -421,6 +421,8 @@ export const KitPage: React.FC = () => {
               <div className="p-3 bg-cream rounded-btn border border-line text-ink">
                 <PixelGrid cellSize={4} gap={2} animated />
               </div>
+            </div>
+
             <div className="flex flex-col items-center gap-3">
               <span className="text-xs font-sans text-ink-soft">
                 Inside Waveform Pill Simulation

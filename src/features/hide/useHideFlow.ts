@@ -18,7 +18,7 @@ export type HideState =
       dimensions: null;
       message: string;
       usedBytes: number;
-      capacityBytes: null;
+      capacityBytes: number | null;
       isCapacityLoading: boolean;
     }
   | {
@@ -51,6 +51,7 @@ export type HideState =
       message: string;
       usedBytes: number;
       capacityBytes: number | null;
+      isCapacityLoading: boolean;
       startedAt: number;
       slowNotice: boolean;
     }
@@ -60,6 +61,9 @@ export type HideState =
       previewUrl: string;
       dimensions: ImageDimensions;
       message: string;
+      usedBytes: number;
+      capacityBytes: number | null;
+      isCapacityLoading: boolean;
       result: EncodeResult;
       stegoUrl: string;
       keySaved: boolean;
@@ -73,6 +77,7 @@ export type HideState =
       message: string;
       usedBytes: number;
       capacityBytes: number | null;
+      isCapacityLoading: boolean;
       error: ApiError;
       retryable: boolean;
     };
@@ -273,6 +278,7 @@ export function hideReducer(state: HideState, action: HideAction): HideState {
         message: state.message,
         usedBytes: state.usedBytes,
         capacityBytes: state.capacityBytes,
+        isCapacityLoading: false,
         startedAt: action.startedAt,
         slowNotice: false,
       };
@@ -294,6 +300,9 @@ export function hideReducer(state: HideState, action: HideAction): HideState {
         previewUrl: state.previewUrl,
         dimensions: state.dimensions,
         message: state.message,
+        usedBytes: state.usedBytes,
+        capacityBytes: state.capacityBytes,
+        isCapacityLoading: false,
         result: action.result,
         stegoUrl: action.stegoUrl,
         keySaved: false,
@@ -316,6 +325,7 @@ export function hideReducer(state: HideState, action: HideAction): HideState {
         message: state.message,
         usedBytes: state.usedBytes,
         capacityBytes: state.capacityBytes,
+        isCapacityLoading: false,
         error: action.error,
         retryable: isRetryable,
       };
@@ -436,7 +446,7 @@ export function useHideFlow() {
       try {
         const capResult = await api.capacity(file, capController.signal);
         dispatch({ type: 'SET_CAPACITY_SUCCESS', capacityBytes: capResult.capacityBytes });
-      } catch (err) {
+      } catch {
         if (capController.signal.aborted) return;
         // Graceful fallback: show no capacity meter and rely on server 422 if over capacity
         dispatch({ type: 'SET_CAPACITY_LOADING', isLoading: false });

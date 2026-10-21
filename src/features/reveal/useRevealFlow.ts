@@ -8,8 +8,8 @@ import { useCountdown } from '@/hooks/useCountdown';
 export type RevealState =
   | {
       status: 'empty';
-      file: null;
-      previewUrl: null;
+      file: File | null;
+      previewUrl: string | null;
       key: string;
       validationError?: string | null;
     }
@@ -78,8 +78,8 @@ function evaluateRevealReadiness(
   if (!file || !previewUrl) {
     return {
       status: 'empty',
-      file: null,
-      previewUrl: null,
+      file,
+      previewUrl,
       key,
     };
   }
@@ -98,7 +98,7 @@ function evaluateRevealReadiness(
 
   return {
     status: 'empty',
-    file: null,
+    file,
     previewUrl,
     key,
   };
@@ -107,22 +107,7 @@ function evaluateRevealReadiness(
 export function revealReducer(state: RevealState, action: RevealAction): RevealState {
   switch (action.type) {
     case 'SET_FILE_VALID': {
-      const isComplete = isKeyComplete(state.key);
-      const isValid = isComplete && verifyKeyChecksum(state.key);
-      if (isComplete && isValid) {
-        return {
-          status: 'ready',
-          file: action.file,
-          previewUrl: action.previewUrl,
-          key: state.key,
-        };
-      }
-      return {
-        status: 'empty',
-        file: null,
-        previewUrl: action.previewUrl,
-        key: state.key,
-      };
+      return evaluateRevealReadiness(action.file, action.previewUrl, state.key);
     }
 
     case 'SET_FILE_INVALID': {
@@ -146,41 +131,9 @@ export function revealReducer(state: RevealState, action: RevealAction): RevealS
 
     case 'SET_KEY': {
       if (state.status === 'revealing') return state;
-
-      const file =
-        state.status === 'ready' ||
-        state.status === 'revealing' ||
-        state.status === 'success' ||
-        state.status === 'failed'
-          ? state.file
-          : null;
-
-      const previewUrl =
-        state.status === 'ready' ||
-        state.status === 'revealing' ||
-        state.status === 'success' ||
-        state.status === 'failed'
-          ? state.previewUrl
-          : state.previewUrl;
-
-      const isComplete = isKeyComplete(action.key);
-      const isValid = isComplete && verifyKeyChecksum(action.key);
-
-      if (file && previewUrl && isComplete && isValid) {
-        return {
-          status: 'ready',
-          file,
-          previewUrl,
-          key: action.key,
-        };
-      }
-
-      return {
-        status: 'empty',
-        file: null,
-        previewUrl,
-        key: action.key,
-      };
+      const file = state.file;
+      const previewUrl = state.previewUrl;
+      return evaluateRevealReadiness(file, previewUrl, action.key);
     }
 
     case 'START_REVEALING': {
@@ -237,43 +190,14 @@ export function revealReducer(state: RevealState, action: RevealAction): RevealS
 
     case 'RATE_LIMIT_RESET': {
       if (state.status === 'error' && state.error.kind === 'rate_limited') {
-        if (state.file && state.previewUrl && isKeyComplete(state.key)) {
-          return {
-            status: 'ready',
-            file: state.file,
-            previewUrl: state.previewUrl,
-            key: state.key,
-          };
-        }
-        return {
-          status: 'empty',
-          file: null,
-          previewUrl: state.previewUrl,
-          key: state.key,
-        };
+        return evaluateRevealReadiness(state.file, state.previewUrl, state.key);
       }
       return state;
     }
 
     case 'RETRY': {
       if (state.status === 'failed' || state.status === 'error') {
-        const file = state.file;
-        const previewUrl = state.previewUrl;
-        const key = state.key;
-        if (file && previewUrl && isKeyComplete(key) && verifyKeyChecksum(key)) {
-          return {
-            status: 'ready',
-            file,
-            previewUrl,
-            key,
-          };
-        }
-        return {
-          status: 'empty',
-          file: null,
-          previewUrl: state.previewUrl,
-          key: state.key,
-        };
+        return evaluateRevealReadiness(state.file, state.previewUrl, state.key);
       }
       return state;
     }

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { TextLink } from '@/components/ui';
 import { PanelChoose } from './Panels/PanelChoose';
 import { PanelShareImage } from './Panels/PanelShareImage';
 import { PanelShareKey } from './Panels/PanelShareKey';

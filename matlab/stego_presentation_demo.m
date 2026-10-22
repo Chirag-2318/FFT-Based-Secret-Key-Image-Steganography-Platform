@@ -155,7 +155,7 @@ grid on;
 
 %% Step 8: VISUALIZATION 2 - 2D-FFT Frequency Domain Spectrum Analysis
 fig2 = figure('Name', 'DSP Steganography: 2D-FFT Frequency Domain Analysis', ...
-              'Color', 'w', 'Position', [150, 150, 1000, 750]);
+              'Color', 'w', 'Position', [150, 150, 1200, 420]);
 
 % Extract luminance channel for FFT visualization
 if imgC == 3
@@ -173,7 +173,7 @@ mag_cov = log(1 + abs(F_cov));
 F_stg = fftshift(fft2(Y_stg));
 mag_stg = log(1 + abs(F_stg));
 
-subplot(2, 2, 1);
+subplot(1, 3, 1);
 imagesc(mag_cov);
 colormap(gca, jet);
 colorbar;
@@ -181,7 +181,7 @@ axis image off;
 title('(a) Cover Image 2D-FFT Magnitude Spectrum (log|1 + F|)', ...
       'FontSize', 11, 'FontWeight', 'bold');
 
-subplot(2, 2, 2);
+subplot(1, 3, 2);
 imagesc(mag_stg);
 colormap(gca, jet);
 colorbar;
@@ -191,36 +191,13 @@ title('(b) Stego Image 2D-FFT Magnitude Spectrum (log|1 + F|)', ...
 
 % Frequency spectrum difference
 specDiff = abs(mag_cov - mag_stg);
-subplot(2, 2, 3);
+subplot(1, 3, 3);
 imagesc(specDiff);
 colormap(gca, hot);
 colorbar;
 axis image off;
 title('(c) 2D-FFT Spectral Magnitude Difference', ...
       'FontSize', 11, 'FontWeight', 'bold');
-
-% 8x8 DFT Block Frequency Coordinate Diagram
-subplot(2, 2, 4);
-gridMatrix = zeros(8, 8);
-gridMatrix(3, 4) = 1.0;  % Coefficient Pair 1
-gridMatrix(4, 3) = 1.0;  % Coefficient Pair 2
-gridMatrix(7, 6) = 0.6;  % Conjugate Partner 1
-gridMatrix(6, 7) = 0.6;  % Conjugate Partner 2
-
-imagesc(gridMatrix);
-colormap(gca, [0.95 0.95 0.95; 0.2 0.6 1.0; 0.9 0.3 0.2]);
-axis image;
-grid on;
-set(gca, 'XTick', 1:8, 'YTick', 1:8);
-xlabel('Frequency Column Index (v)');
-ylabel('Frequency Row Index (u)');
-title('(d) 8x8 DFT Block: Modulated Pairs (Red/Blue)', ...
-      'FontSize', 11, 'FontWeight', 'bold');
-
-text(4, 3, 'c2 (4,3)', 'HorizontalAlignment', 'center', 'FontWeight', 'bold', 'Color', 'w');
-text(3, 4, 'c1 (3,4)', 'HorizontalAlignment', 'center', 'FontWeight', 'bold', 'Color', 'w');
-text(6, 7, 'sym2', 'HorizontalAlignment', 'center', 'FontWeight', 'bold', 'Color', 'k');
-text(7, 6, 'sym1', 'HorizontalAlignment', 'center', 'FontWeight', 'bold', 'Color', 'k');
 
 %% Step 9: VISUALIZATION 3 - Secret Key Sensitivity Demonstration
 fig3 = figure('Name', 'DSP Steganography: Secret Key Sensitivity', ...
